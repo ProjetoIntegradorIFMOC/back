@@ -9,7 +9,12 @@ import RequireRole from "@/pages/RequireRole";
 import Unauthorized from "@/pages/Unauthorized";
 import Submissions from "@/pages/submissions/Submissions";
 import SubmissionsDetails from "@/pages/submissionsDetails/SubmissionsDetails";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
+
+
+export function RedirectToHome() {
+  return <Navigate to="/home" replace />;
+}
 
 export default function AppRouter() {
   return (
@@ -18,6 +23,7 @@ export default function AppRouter() {
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route element={<RequireAuth />}>
+          <Route path="/" element={<RedirectToHome />} />
           <Route path="/" element={<AppLayout />}>
             <Route index element={<App />} />
             <Route path="home" element={<Home />} />

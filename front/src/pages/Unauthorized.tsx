@@ -44,7 +44,7 @@ export default function Unauthorized() {
                         Voltar
                     </Button>
                     <Button
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate("/home")}
                     >
                         Ir para Página Inicial
                     </Button>

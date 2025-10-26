@@ -26,6 +26,7 @@ export default function Header() {
   // Estado para controlar o menu mobile aberto/fechado
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [error, setError] = useState(false)
+  const [errorMsg, setErrorMsg] = useState("")
 
   // Hook para saber qual rota está ativa
   const location = useLocation();
@@ -68,12 +69,13 @@ export default function Header() {
     } catch (error) {
       console.error("Erro ao fazer logout", error);
       setError(true)
+      setErrorMsg("Erro ao fazer logout. Tente novamente mais tarde.")
     }
   }
 
   return (
     <>
-      {error && <Notification type="error" message={error} onClose={() => setError(null)} />}
+      {error && <Notification type="error" message={errorMsg} onClose={() => { setError(false); setErrorMsg(""); }} />}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -119,14 +121,25 @@ export default function Header() {
                   </NavigationMenuItem>
                 ))}
               </NavigationMenuList>
-            </NavigationMenu>
-                <button
+              <button
                 onClick={handleLogout}
-                className="flex items-center gap-1 px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition-all duration-200 cursor-pointer"
+                className={`relative flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                  bg-gradient-to-r from-red-500 to-pink-500
+                  border border-red-600
+                  text-white
+                  shadow-sm
+                  hover:from-red-600 hover:to-pink-600
+                  hover:border-red-700
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500
+                  cursor-pointer
+                `}
               >
                 <LogOut className="w-5 h-5" />
                 Sair
+                {/* Barra decorativa igual aos outros botões, mas vermelha */}
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full"></div>
               </button>
+            </NavigationMenu>
             {/* Botão hamburguer para abrir/fechar menu mobile */}
             <div className="md:hidden">
               <button
@@ -173,6 +186,17 @@ export default function Header() {
                     )}
                   </Link>
                 ))}
+                <button
+                  onClick={handleLogout}
+                  className={`w-full relative flex items-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500
+                    text-red-700 bg-red-500/10 shadow-sm border-l-4 border-red-600
+                    hover:bg-red-500/20 hover:border-red-700
+                    cursor-pointer
+                  `}
+                >
+                  <span className="flex-1 text-left">Sair</span>
+                  <LogOut className="w-5 h-5 ml-2" />
+                </button>
               </div>
             </div>
           </div>
