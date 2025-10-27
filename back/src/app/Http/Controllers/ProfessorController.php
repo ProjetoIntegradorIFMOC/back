@@ -23,7 +23,7 @@ class ProfessorController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(StoreProfessorRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -51,7 +51,7 @@ class ProfessorController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    public function update(UpdateProfessorRequest $request, $id)
     {
         $professor = Professor::findOrFail($id);
         $user = User::findOrFail($professor->id);
