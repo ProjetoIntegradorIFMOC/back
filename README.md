@@ -142,7 +142,7 @@ Siga esta sequência com atenção.
 8.  **Execute as Migrações do Banco de Dados:**
     Com os contêineres rodando, execute as migrações do Laravel para criar as tabelas no banco de dados.
     ```bash
-    docker exec laravel_app php artisan migrate
+    docker exec laravel_app php artisan migrate:fresh --seed
     ```
 
 9.  **Gere a Chave da Aplicação Laravel:**
