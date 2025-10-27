@@ -23,7 +23,7 @@ class ProfessorController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(StoreProfessorRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -51,7 +51,7 @@ class ProfessorController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    public function update(UpdateProfessorRequest $request, $id)
     {
         $professor = Professor::findOrFail($id);
         $user = User::findOrFail($professor->id);
@@ -89,9 +89,19 @@ class ProfessorController extends Controller
         $professor = Professor::findOrFail($id);
         $user = User::findOrFail($id);
 
-        $professor->delete();
-        $user->delete();
+        try {
+            DB::beginTransaction();
 
-        return response()->json(null, 204);
+            $professor->delete();
+            $user->delete();
+
+            DB::commit();
+
+            return response()->json(null, 204);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response()->json(['error' => 'Erro ao deletar professor', 'details' => $e->getMessage()], 500);
+        }
     }
 }
