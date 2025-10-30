@@ -276,7 +276,7 @@ function ProblemViewModal({ isOpen, onClose, problem }: ProblemViewModalProps) {
                 <h3 className="font-semibold mb-2">Tempo Limite</h3>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  <span>{Math.floor(problem.timeLimitMs / 1000)} segundos</span>
+                  <span>{problem.timeLimitMs} milissegundos</span>
                 </div>
               </div>
               <div>
@@ -562,7 +562,7 @@ export default function Problems() {
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
-                        <span>{Math.floor(problem.timeLimitMs / 1000)}s</span>
+                        <span>{problem.timeLimitMs}ms</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <HardDrive className="w-4 h-4" />
