@@ -48,6 +48,13 @@ export default function Header() {
         { to: "/teachers", label: "Gerenciar Professores" }
       ]
     }] : []),
+    // Só mostra o item "Problemas" se o usuário for admin
+    ...(isAdmin ? [{
+      label: "Problemas",
+      submenu: [
+        { to: "/problems", label: "Gerenciar Problemas" }
+      ]
+    }] : []),
   ];
 
   // Alterna o menu mobile

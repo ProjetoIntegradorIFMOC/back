@@ -28,10 +28,8 @@ class ProblemaController extends Controller
      */
     public function index()
     {
-        $problemas = Problema::with('casosTeste')->get();
-
-
-        return response()->json([$problemas]);
+        $problemas = ProblemaService::listarTodos();
+        return response()->json($problemas);
     }
 
     /**
@@ -119,19 +117,60 @@ class ProblemaController extends Controller
      *      path="/api/problemas/{problema}",
      *      operationId="updateProblema",
      *      tags={"Problemas"},
-     *      summary="Atualiza um problema (Não implementado)",
-     *      deprecated=true,
-     *      description="Este endpoint ainda não foi implementado.",
-     *      @OA\Parameter(name="problema", in="path", required=true, @OA\Schema(type="integer")),
-     *      @OA\Response(response=501, description="Não implementado")
+     *      summary="Atualiza um problema",
+     *      description="Atualiza um problema existente e seus casos de teste associados.",
+     *      @OA\Parameter(
+     *          name="problema",
+     *          in="path",
+     *          required=true,
+     *          description="ID do problema",
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          description="Dados do problema e seus casos de teste.",
+     *          @OA\JsonContent(
+     *              required={"titulo", "enunciado", "tempo_limite", "memoria_limite"},
+     *              @OA\Property(property="titulo", type="string", example="Soma Simples"),
+     *              @OA\Property(property="enunciado", type="string", example="Faça um programa que some dois números."),
+     *              @OA\Property(property="tempo_limite", type="integer", example=1),
+     *              @OA\Property(property="memoria_limite", type="integer", example=1024),
+     *              @OA\Property(
+     *                  property="casos_teste",
+     *                  type="array",
+     *                  description="Lista de casos de teste para o problema.",
+     *                  @OA\Items(
+     *                      type="object",
+     *                      required={"entrada", "saida"},
+     *                      @OA\Property(property="entrada", type="string", example="1 2"),
+     *                      @OA\Property(property="saida", type="string", example="3"),
+     *                      @OA\Property(property="privado", type="boolean", description="Define se o caso de teste é público (false) ou privado (true). O padrão é false se não for enviado.", example=false)
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Problema atualizado com sucesso",
+     *          @OA\JsonContent(ref="#/components/schemas/Problema")
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Erro ao atualizar",
+     *          @OA\JsonContent(type="string", example="Erro ao atualizar!")
+     *      ),
+     *      @OA\Response(response=404, description="Problema não encontrado")
      * )
      */
     public function update(Request $request, Problema $problema)
     {
+        $problemaService = new ProblemaService($request, $problema);
 
-    }
-    public function teste(){
+        if(!$problemaService->salvar()){
+            return response()->json('Erro ao atualizar!', 400);
+        }
 
+        return response()->json($problemaService->getProblema());
     }
 
     /**
@@ -159,9 +198,7 @@ class ProblemaController extends Controller
      */
     public function destroy(Problema $problema)
     {
-        try{
-            $problema->delete();
-        } catch(Exception $e){
+        if(!ProblemaService::excluir($problema->id)){
             return response()->json(['Erro ao apagar.'], 400);
         }
 

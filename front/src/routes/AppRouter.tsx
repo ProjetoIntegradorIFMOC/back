@@ -12,6 +12,7 @@ import Submissions from "@/pages/submissions/Submissions";
 import Students from "@/pages/students/Students";
 import Teachers from "@/pages/teachers/Teachers";
 import SubmissionsDetails from "@/pages/submissionsDetails/SubmissionsDetails";
+import Problems from "@/pages/problems/Problems";
 import { BrowserRouter, Route, Routes } from "react-router";
 
 export default function AppRouter() {
@@ -41,6 +42,7 @@ export default function AppRouter() {
             <Route element={<RequireRole allowedRoles={["admin"]} />}>
               <Route path="students" element={<Students />} />
               <Route path="teachers" element={<Teachers />} />
+              <Route path="problems" element={<Problems />} />
             </Route>
           </Route>
         </Route>
