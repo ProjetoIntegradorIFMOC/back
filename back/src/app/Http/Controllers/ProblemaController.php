@@ -109,7 +109,8 @@ class ProblemaController extends Controller
      */
     public function show(Problema $problema)
     {
-        return response()->json($problema);
+        $problemaComCasos = Problema::with('casosTeste')->find($problema->id);
+        return response()->json($problemaComCasos);
     }
 
     /**

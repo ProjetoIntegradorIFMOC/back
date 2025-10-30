@@ -53,7 +53,15 @@ class Problema extends Model
         'memoria_limite',
     ];
 
+    protected $with = [];
+    protected $appends = [];
+
     public function casosTeste(){
         return $this->hasMany(CasoTeste::class, 'problema_id');
+    }
+    
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

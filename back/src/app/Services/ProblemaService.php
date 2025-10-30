@@ -24,8 +24,8 @@ class ProblemaService {
             $this->_problema = new Problema($request->all());
         }
 
-        if(isset($request['casos_teste'])){
-            $this->criaCasosTeste($request['casos_teste']);
+        if($request->has('casos_teste') && !empty($request->input('casos_teste'))){
+            $this->criaCasosTeste($request->input('casos_teste'));
         }
     }
 
