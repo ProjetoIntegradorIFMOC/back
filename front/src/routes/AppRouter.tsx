@@ -42,6 +42,8 @@ export default function AppRouter() {
             <Route element={<RequireRole allowedRoles={["admin"]} />}>
               <Route path="students" element={<Students />} />
               <Route path="teachers" element={<Teachers />} />
+            </Route>
+            <Route element={<RequireRole allowedRoles={["admin", "professor"]} />}>
               <Route path="problems" element={<Problems />} />
             </Route>
           </Route>

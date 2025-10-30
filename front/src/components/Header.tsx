@@ -32,8 +32,9 @@ export default function Header() {
   // Hook para obter o usuário e suas roles
   const { user } = useUser();
 
-  // Verifica se o usuário é admin
+  // Verifica se o usuário é admin ou professor
   const isAdmin = user?.roles?.includes("admin") || false;
+  const isProfessor = user?.roles?.includes("professor") || false;
 
   // Define os itens de navegação baseado nas permissões
   const navigationItems: NavigationItem[] = [
@@ -48,8 +49,8 @@ export default function Header() {
         { to: "/teachers", label: "Gerenciar Professores" }
       ]
     }] : []),
-    // Só mostra o item "Problemas" se o usuário for admin
-    ...(isAdmin ? [{
+    // Mostra o item "Problemas" se o usuário for admin ou professor
+    ...(isAdmin || isProfessor ? [{
       label: "Problemas",
       submenu: [
         { to: "/problems", label: "Gerenciar Problemas" }
