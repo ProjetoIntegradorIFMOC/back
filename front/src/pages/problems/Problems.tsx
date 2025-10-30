@@ -45,7 +45,7 @@ function ProblemFormModal({ isOpen, onClose, onSave, problem, mode }: ProblemFor
       setFormData({
         titulo: problem.title,
         enunciado: problem.statement,
-        tempo_limite: Math.floor(problem.timeLimitMs / 1000),
+        tempo_limite: problem.timeLimitMs,
         memoria_limite: problem.memoryLimitKb,
         casos_teste: problem.testCases?.map(tc => ({
           entrada: tc.input,
@@ -57,7 +57,7 @@ function ProblemFormModal({ isOpen, onClose, onSave, problem, mode }: ProblemFor
       setFormData({
         titulo: "",
         enunciado: "",
-        tempo_limite: 1,
+        tempo_limite: 1000,
         memoria_limite: 512,
         casos_teste: [{ entrada: "", saida: "", privado: false }]
       });
@@ -134,7 +134,7 @@ function ProblemFormModal({ isOpen, onClose, onSave, problem, mode }: ProblemFor
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="tempo_limite">Tempo Limite (segundos) *</Label>
+                <Label htmlFor="tempo_limite">Tempo Limite (ms) *</Label>
                 <Input
                   id="tempo_limite"
                   type="number"

@@ -25,7 +25,7 @@ export async function getProblemById(id: string): Promise<Problem | undefined> {
       id: problema.id,
       title: problema.titulo,
       statement: problema.enunciado,
-      timeLimitMs: problema.tempo_limite * 1000,
+      timeLimitMs: problema.tempo_limite,
       memoryLimitKb: problema.memoria_limite,
       testCases: problema.casos_teste?.map((caso: any) => ({
         id: caso.id,
@@ -58,7 +58,7 @@ export async function getAllProblems(): Promise<Problem[]> {
       id: problema.id,
       title: problema.titulo,
       statement: problema.enunciado,
-      timeLimitMs: problema.tempo_limite * 1000,
+      timeLimitMs: problema.tempo_limite,
       memoryLimitKb: problema.memoria_limite,
       testCases: problema.casos_teste?.map((caso: any) => ({
         id: caso.id,
@@ -98,7 +98,7 @@ export async function createProblem(problemData: {
       id: problema.id,
       title: problema.titulo,
       statement: problema.enunciado,
-      timeLimitMs: problema.tempo_limite * 1000,
+      timeLimitMs: problema.tempo_limite,
       memoryLimitKb: problema.memoria_limite,
     };
   } catch (error) {
@@ -132,7 +132,7 @@ export async function updateProblem(id: number, problemData: {
       id: problema.id,
       title: problema.titulo,
       statement: problema.enunciado,
-      timeLimitMs: problema.tempo_limite * 1000,
+      timeLimitMs: problema.tempo_limite,
       memoryLimitKb: problema.memoria_limite,
     };
   } catch (error) {
