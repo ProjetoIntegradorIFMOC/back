@@ -33,7 +33,6 @@ O Vagrant (VirtualBox) pode ser lento no Windows. A performance melhora drastica
     1.  Vá em "Ativar ou desativar recursos do Windows" no Painel de Controle.
     2.  Certifique-se de que as seguintes caixas estejam **marcadas**:
         * `Plataforma de Hipervisor do Windows`
-        * `Plataforma de Máquina Virtual`
     3.  Reinicie o seu computador.
 
 ---
@@ -181,7 +180,7 @@ Usaremos o Docker *dentro* da VM para rodar o banco de dados, o Redis e o Judge0
 
 3.  **Configuração (Primeira Vez):**
     * Instale as dependências: `npm install`
-    * Copie e configure seu `.env` (ex: `VITE_API_BASE_URL=http://localhost:8000`).
+    * Copie e configure seu `.env` (ex: `VITE_API_URL=http://localhost:8000`).
 
 4.  **Execute o servidor:**
     ```bash
