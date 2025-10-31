@@ -110,3 +110,6 @@ export type Professor = {
   password?: string;
   password_confirmation?: string;
 }
+
+// Classes/Turmas
+export * from './classes';

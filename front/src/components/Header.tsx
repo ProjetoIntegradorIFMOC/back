@@ -22,7 +22,7 @@ export default function Header() {
   // Estado para controlar o menu mobile aberto/fechado
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
@@ -40,6 +40,7 @@ export default function Header() {
     { to: "/home", label: "Dashboard" },
     { to: "/activities", label: "Atividades" },
     { to: "/submissions", label: "Submissões" },
+    { to: "/classes", label: "Turmas" },
     // Só mostra o item "Gerenciar" se o usuário for admin
     ...(isAdmin ? [{
       label: "Gerenciar",
@@ -109,7 +110,7 @@ export default function Header() {
       navigate("/login");
     } catch (error) {
       console.error("Erro ao fazer logout", error);
-      setError(true)
+      setError("Erro ao fazer logout");
     }
   }
 
