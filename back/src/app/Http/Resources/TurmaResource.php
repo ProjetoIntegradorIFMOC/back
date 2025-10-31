@@ -17,9 +17,12 @@ class TurmaResource extends JsonResource
         return [
             'id' => $this->id,
             'nome' => $this->nome,
-            'nome_professor' => $this->professor->user->name,
-            'num_alunos' => $this->alunos()->count(),
+            'professor_id' => $this->professor_id,
+            'teacherName' => $this->professor->user->name,
+            'studentsCount' => $this->alunos()->count(),
             'alunos' => AlunoTurmaResource::collection($this->whenLoaded('alunos')),
+            'createdAt' => $this->created_at?->toISOString(),
+            'updatedAt' => $this->updated_at?->toISOString(),
         ];
     }
 }

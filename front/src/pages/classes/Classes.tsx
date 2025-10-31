@@ -28,12 +28,16 @@ export default function Classes() {
 
   const [formData, setFormData] = useState<CreateClassDTO>({
     nome: "",
-    professor_id: 1, // Temporário - ajustar conforme seu sistema de auth
+    professor_id: 0, // Será preenchido com o ID do professor logado
   });
 
   useEffect(() => {
     loadClasses();
-  }, []);
+    // Define o professor_id se o usuário logado for professor
+    if (user && user.roles?.includes("professor")) {
+      setFormData((prev) => ({ ...prev, professor_id: user.id }));
+    }
+  }, [user]);
 
   useEffect(() => {
     filterClasses();
@@ -117,7 +121,7 @@ export default function Classes() {
   const resetForm = () => {
     setFormData({
       nome: "",
-      professor_id: 1,
+      professor_id: user?.id || 0,
     });
     setEditingClass(null);
     setShowForm(false);

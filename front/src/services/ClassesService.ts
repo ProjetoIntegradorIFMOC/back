@@ -6,9 +6,8 @@ import type {
   ClassStudent,
   AddStudentToClassDTO,
 } from "@/types/classes";
-import { mockClasses, mockClassStudents } from "@/mocks/classes";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -29,89 +28,50 @@ api.interceptors.request.use((config) => {
 export const ClassesService = {
   // Listar todas as turmas
   getAllClasses: async (): Promise<Class[]> => {
-    try {
-      const response = await api.get("/classes");
-      return response.data;
-    } catch (error) {
-      console.warn("API não disponível, usando dados mockados", error);
-      return Promise.resolve(mockClasses);
-    }
+    const response = await api.get("/turmas");
+    return response.data.data || response.data;
   },
 
   // Buscar turma por ID
   getClassById: async (id: number): Promise<Class> => {
-    try {
-      const response = await api.get(`/classes/${id}`);
-      return response.data;
-    } catch (error) {
-      console.warn("API não disponível, usando dados mockados", error);
-      const mockClass = mockClasses.find((c) => c.id === id);
-      if (!mockClass) throw new Error("Turma não encontrada");
-      return Promise.resolve(mockClass);
-    }
+    const response = await api.get(`/turmas/${id}`);
+    return response.data.data || response.data;
   },
 
   // Criar nova turma
   createClass: async (data: CreateClassDTO): Promise<Class> => {
-    try {
-      const response = await api.post("/classes", data);
-      return response.data;
-    } catch (error) {
-      console.warn("API não disponível, simulando criação", error);
-      const newClass: Class = {
-        id: Math.max(...mockClasses.map((c) => c.id)) + 1,
-        ...data,
-        studentsCount: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      mockClasses.push(newClass);
-      return Promise.resolve(newClass);
-    }
+    const response = await api.post("/turmas", data);
+    return response.data.data || response.data;
   },
 
   // Atualizar turma
   updateClass: async (id: number, data: UpdateClassDTO): Promise<Class> => {
-    try {
-      const response = await api.put(`/classes/${id}`, data);
-      return response.data;
-    } catch (error) {
-      console.warn("API não disponível, simulando atualização", error);
-      const classIndex = mockClasses.findIndex((c) => c.id === id);
-      if (classIndex === -1) throw new Error("Turma não encontrada");
-      
-      mockClasses[classIndex] = {
-        ...mockClasses[classIndex],
-        ...data,
-        updatedAt: new Date().toISOString(),
-      };
-      return Promise.resolve(mockClasses[classIndex]);
-    }
+    const response = await api.put(`/turmas/${id}`, data);
+    return response.data.data || response.data;
   },
 
   // Deletar turma
   deleteClass: async (id: number): Promise<void> => {
-    try {
-      await api.delete(`/classes/${id}`);
-    } catch (error) {
-      console.warn("API não disponível, simulando exclusão", error);
-      const classIndex = mockClasses.findIndex((c) => c.id === id);
-      if (classIndex !== -1) {
-        mockClasses.splice(classIndex, 1);
-      }
-      return Promise.resolve();
-    }
+    await api.delete(`/turmas/${id}`);
   },
 
   // Listar alunos de uma turma
   getClassStudents: async (classId: number): Promise<ClassStudent[]> => {
-    try {
-      const response = await api.get(`/classes/${classId}/students`);
-      return response.data;
-    } catch (error) {
-      console.warn("API não disponível, usando dados mockados", error);
-      return Promise.resolve(mockClassStudents[classId] || []);
+    const response = await api.get(`/turmas/${classId}`);
+    const turma = response.data.data || response.data;
+    
+    // Transformar os alunos do backend para o formato esperado pelo frontend
+    if (turma.alunos && Array.isArray(turma.alunos)) {
+      return turma.alunos.map((aluno: any) => ({
+        id: aluno.id,
+        classId: classId,
+        studentId: aluno.user_id,
+        studentName: aluno.nome || aluno.name,
+        studentEmail: aluno.email,
+        enrolledAt: aluno.pivot?.created_at || new Date().toISOString(),
+      }));
     }
+    return [];
   },
 
   // Adicionar aluno à turma
@@ -119,25 +79,8 @@ export const ClassesService = {
     classId: number,
     data: AddStudentToClassDTO
   ): Promise<ClassStudent> => {
-    try {
-      const response = await api.post(`/classes/${classId}/students`, data);
-      return response.data;
-    } catch (error) {
-      console.warn("API não disponível, simulando adição de aluno", error);
-      const newStudent: ClassStudent = {
-        id: Date.now(),
-        classId,
-        studentId: data.studentId,
-        studentName: "Aluno Mock",
-        studentEmail: "aluno.mock@ifmoc.edu.br",
-        enrolledAt: new Date().toISOString(),
-      };
-      if (!mockClassStudents[classId]) {
-        mockClassStudents[classId] = [];
-      }
-      mockClassStudents[classId].push(newStudent);
-      return Promise.resolve(newStudent);
-    }
+    const response = await api.post(`/turmas/${classId}/alunos`, data);
+    return response.data.data || response.data;
   },
 
   // Remover aluno da turma
@@ -145,40 +88,19 @@ export const ClassesService = {
     classId: number,
     studentId: number
   ): Promise<void> => {
-    try {
-      await api.delete(`/classes/${classId}/students/${studentId}`);
-    } catch (error) {
-      console.warn("API não disponível, simulando remoção de aluno", error);
-      if (mockClassStudents[classId]) {
-        mockClassStudents[classId] = mockClassStudents[classId].filter(
-          (s) => s.studentId !== studentId
-        );
-      }
-      return Promise.resolve();
-    }
+    await api.delete(`/turmas/${classId}/alunos/${studentId}`);
   },
 
   // Buscar turmas de um professor
   getClassesByTeacher: async (teacherId: number): Promise<Class[]> => {
-    const response = await api.get(`/teachers/${teacherId}/classes`);
-    return response.data;
+    const response = await api.get(`/professores/${teacherId}/turmas`);
+    return response.data.data || response.data;
   },
 
   // Buscar turmas de um aluno
   getClassesByStudent: async (studentId: number): Promise<Class[]> => {
-    try {
-      const response = await api.get(`/students/${studentId}/classes`);
-      return response.data;
-    } catch (error) {
-      console.warn("API não disponível, usando dados mockados para turmas do aluno", error);
-      // Encontrar todas as turmas onde o aluno está matriculado nos mocks
-      const classIds = Object.entries(mockClassStudents)
-        .filter(([, students]) => students.some((s) => s.studentId === studentId))
-        .map(([classId]) => Number(classId));
-
-      const result = mockClasses.filter((c) => classIds.includes(c.id));
-      return Promise.resolve(result);
-    }
+    const response = await api.get(`/alunos/${studentId}/turmas`);
+    return response.data.data || response.data;
   },
 };
 
