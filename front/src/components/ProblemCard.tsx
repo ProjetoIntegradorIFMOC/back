@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import type { Problem } from "@/types";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, Codesandbox } from "lucide-react";
 
 type ProblemCardProps = {
   problem: Problem;
@@ -39,12 +39,17 @@ export function ProblemCard({ problem, onDelete, onEdit, onView }: ProblemCardPr
       onClick={() => onView(problem)}
     >
       <div className="p-4 flex justify-between items-center cursor-pointer">
-        {/* Left side: Title and Statement */}
-        <div className="flex-grow">
-          <h3 className="text-lg font-semibold text-gray-800">{problem.title}</h3>
-          <p className="text-gray-600 line-clamp-2 mt-1">
-            {problem.statement}
-          </p>
+        {/* Left side: Icon, Title and Statement */}
+        <div className="flex items-center flex-grow">
+          <div className="flex-shrink-0 mr-4">
+            <Codesandbox size={24} className="text-gray-500" />
+          </div>
+          <div className="flex-grow">
+            <h3 className="text-lg font-semibold text-gray-800">{problem.title}</h3>
+            <p className="text-gray-600 line-clamp-2 mt-1">
+              {problem.statement}
+            </p>
+          </div>
         </div>
 
         {/* Right side: Actions Menu */}
