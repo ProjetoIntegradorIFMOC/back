@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Loading from "@/components/Loading";
 import Notification from "@/components/Notification";
-import { Plus, Edit, Trash2, Users, Search, ArrowRight, UserPlus } from "lucide-react";
+import { Plus, Edit, Trash2, Users, Search, ArrowRight, UserPlus, GraduationCap } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useUser } from "@/context/UserContext";
 
@@ -145,9 +145,15 @@ export default function Classes() {
       )}
 
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Turmas</h1>
+        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+            <GraduationCap className="w-6 h-6 text-white" />
+          </div>
+          Turmas
+          </h1>
         {hasAnyRole(["professor", "admin"]) && (
-          <Button onClick={() => setShowForm(!showForm)}>
+          <Button onClick={() => setShowForm(!showForm)} 
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:opacity-90 font-medium transition-opacity shadow-md">
             <Plus className="w-4 h-4 mr-2" />
             Nova Turma
           </Button>
@@ -177,7 +183,7 @@ export default function Classes() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="nome">Nome da Turma</Label>
+                <Label htmlFor="nome" className="mb-2 block">Nome</Label>
                 <Input
                   id="nome"
                   value={formData.nome}
@@ -191,10 +197,14 @@ export default function Classes() {
             </div>
 
             <div className="flex gap-2">
-              <Button type="submit">
-                {editingClass ? "Atualizar" : "Criar"}
+              <Button type="submit"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:opacity-90 font-medium transition-opacity shadow-md"
+              >
+                {editingClass ? "Atualizar" : "Salvar"}
               </Button>
-              <Button type="button" variant="outline" onClick={resetForm}>
+              <Button type="button" variant="outline" onClick={resetForm}
+              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors hover:bg-red-600 hover:text-white"
+              >
                 Cancelar
               </Button>
             </div>
@@ -225,6 +235,7 @@ export default function Classes() {
                     <Button
                       size="sm"
                       variant="outline"
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors hover:bg-blue-600 hover:text-white"
                       onClick={() => handleEdit(cls)}
                     >
                       <Edit className="w-4 h-4" />
@@ -232,6 +243,7 @@ export default function Classes() {
                     <Button
                       size="sm"
                       variant="outline"
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors hover:bg-red-600 hover:text-white"
                       onClick={() => handleDelete(cls.id)}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -258,7 +270,16 @@ export default function Classes() {
                   size="sm"
                   variant="outline"
                   onClick={() => navigate(`/classes/${cls.id}`)}
-                  className="w-full"
+                  className="w-full border border-blue-600 
+                    text-blue-600 
+                    rounded-lg 
+                    transition-all 
+                    duration-300 
+                    hover:text-white 
+                    hover:border-transparent 
+                    hover:bg-gradient-to-r 
+                    hover:from-blue-500 
+                    hover:to-purple-500"
                 >
                   Ver Detalhes
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -267,7 +288,16 @@ export default function Classes() {
                   <Button
                     size="sm"
                     onClick={() => navigate(`/classes/${cls.id}?tab=students`)}
-                    className="w-full"
+                    className="w-full
+                    bg-black 
+                    text-white 
+                    rounded-lg 
+                    transition-all 
+                    duration-300 
+                    hover:bg-white 
+                    hover:text-black 
+                    border 
+                    border-black"
                   >
                     <UserPlus className="w-4 h-4 mr-2" />
                     Gerenciar Alunos
