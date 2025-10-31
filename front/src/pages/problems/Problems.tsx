@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { getAllProblems, createProblem, updateProblem, deleteProblem, getProblemById } from "@/services/ProblemsServices";
 import type { Problem } from "@/types";
 import Notification from "@/components/Notification";
+import { ProblemCard } from "@/components/ProblemCard";
 import { useUser } from "@/context/UserContext";
 
 interface TestCase {
@@ -549,7 +550,7 @@ export default function Problems() {
       </div>
 
       {/* Lista de Problemas */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {filteredProblems.length === 0 ? (
           <div className="text-center py-12">
             <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
@@ -565,65 +566,17 @@ export default function Problems() {
             </p>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50 hover:bg-gray-50">
-                <TableHead className="font-semibold text-gray-900">
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4" />
-                    Título
-                  </div>
-                </TableHead>
-                <TableHead className="font-semibold text-gray-900">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    Tempo Limite
-                  </div>
-                </TableHead>
-                <TableHead className="font-semibold text-gray-900">
-                  <div className="flex items-center gap-2">
-                    <HardDrive className="w-4 h-4" />
-                    Memória Limite
-                  </div>
-                </TableHead>
-                <TableHead className="font-semibold text-gray-900 text-center">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredProblems.map((problem) => (
-                <TableRow key={problem.id} className="hover:bg-gray-50 transition-colors duration-200">
-                  <TableCell className="font-medium text-gray-900">{problem.title}</TableCell>
-                  <TableCell className="text-gray-600">{problem.timeLimitMs}ms</TableCell>
-                  <TableCell className="text-gray-600">{problem.memoryLimitKb}KB</TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-center gap-2">
-                      <button
-                        onClick={() => handleView(problem)}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Visualizar problema"
-                      >
-                        <Eye className="w-4 h-4 text-gray-900 hover:text-blue-600" />
-                      </button>
-                      <button
-                        onClick={() => handleEdit(problem)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Editar problema"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(problem)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Remover problema"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="grid grid-cols-1 gap-4">
+            {filteredProblems.map((problem) => (
+              <ProblemCard
+                key={problem.id}
+                problem={problem}
+                onView={handleView}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+              />
+            ))}
+          </div>
         )}
       </div>
 
