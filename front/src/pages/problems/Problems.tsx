@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { Plus, Pencil, Trash2, Eye, Clock, HardDrive, X, BookOpen, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, Clock, HardDrive, X, BookOpen, Search, Codesandbox } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { getAllProblems, createProblem, updateProblem, deleteProblem, getProblemById } from "@/services/ProblemsServices";
 import type { Problem } from "@/types";
 import Notification from "@/components/Notification";
+import { useUser } from "@/context/UserContext";
 
 interface TestCase {
   entrada: string;
@@ -20,6 +29,7 @@ interface ProblemFormData {
   tempo_limite: number;
   memoria_limite: number;
   casos_teste: TestCase[];
+  created_by?: number;
 }
 
 // Modal simples para formulário
@@ -383,6 +393,7 @@ export default function Problems() {
   const [viewingProblem, setViewingProblem] = useState<Problem | null>(null);
   const [deletingProblem, setDeletingProblem] = useState<Problem | null>(null);
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+  const { user } = useUser();
 
   useEffect(() => {
     loadProblems();
@@ -392,6 +403,7 @@ export default function Problems() {
     try {
       setLoading(true);
       const data = await getAllProblems();
+      console.log(data);
       setProblems(data);
     } catch (error) {
       setNotification({ type: 'error', message: 'Erro ao carregar problemas' });
@@ -411,7 +423,7 @@ export default function Problems() {
           setNotification({ type: 'error', message: 'Erro ao atualizar problema' });
         }
       } else {
-        const result = await createProblem(data);
+        const result = await createProblem({ ...data, created_by: user?.id });
         if (result) {
           setNotification({ type: 'success', message: 'Problema criado com sucesso!' });
           loadProblems();
@@ -553,55 +565,65 @@ export default function Problems() {
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
-            {filteredProblems.map((problem) => (
-              <div key={problem.id} className="p-6 hover:bg-gray-50 transition-colors duration-200">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">{problem.title}</h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        <span>{problem.timeLimitMs}ms</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <HardDrive className="w-4 h-4" />
-                        <span>{problem.memoryLimitKb}KB</span>
-                      </div>
-                      {problem.testCases && (
-                        <span className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded">
-                          {problem.testCases.length} caso{problem.testCases.length !== 1 ? 's' : ''} de teste
-                        </span>
-                      )}
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50 hover:bg-gray-50">
+                <TableHead className="font-semibold text-gray-900">
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    Título
+                  </div>
+                </TableHead>
+                <TableHead className="font-semibold text-gray-900">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    Tempo Limite
+                  </div>
+                </TableHead>
+                <TableHead className="font-semibold text-gray-900">
+                  <div className="flex items-center gap-2">
+                    <HardDrive className="w-4 h-4" />
+                    Memória Limite
+                  </div>
+                </TableHead>
+                <TableHead className="font-semibold text-gray-900 text-center">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredProblems.map((problem) => (
+                <TableRow key={problem.id} className="hover:bg-gray-50 transition-colors duration-200">
+                  <TableCell className="font-medium text-gray-900">{problem.title}</TableCell>
+                  <TableCell className="text-gray-600">{problem.timeLimitMs}ms</TableCell>
+                  <TableCell className="text-gray-600">{problem.memoryLimitKb}KB</TableCell>
+                  <TableCell>
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => handleView(problem)}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Visualizar problema"
+                      >
+                        <Eye className="w-4 h-4 text-gray-900 hover:text-blue-600" />
+                      </button>
+                      <button
+                        onClick={() => handleEdit(problem)}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Editar problema"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(problem)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Remover problema"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <button
-                      onClick={() => handleView(problem)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Visualizar problema"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleEdit(problem)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Editar problema"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(problem)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Remover problema"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </div>
 
