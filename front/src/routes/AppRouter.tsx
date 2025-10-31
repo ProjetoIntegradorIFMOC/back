@@ -44,7 +44,7 @@ export default function AppRouter() {
               <Route path="students" element={<Students />} />
               <Route path="teachers" element={<Teachers />} />
             </Route>
-            <Route element={<RequireRole allowedRoles={["professor", "admin"]} />}>
+            <Route element={<RequireRole allowedRoles={["student", "professor", "admin"]} />}>
               <Route path="classes">
                 <Route index element={<Classes />} />
                 <Route path=":id" element={<ClassDetails />} />

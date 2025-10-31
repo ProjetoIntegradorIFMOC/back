@@ -9,10 +9,12 @@ import Loading from "@/components/Loading";
 import Notification from "@/components/Notification";
 import { Plus, Edit, Trash2, Users, Search, ArrowRight, UserPlus } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useUser } from "@/context/UserContext";
 
 export default function Classes() {
   const navigate = useNavigate();
   const { hasAnyRole } = useUserRole();
+  const { user } = useUser();
   const [classes, setClasses] = useState<Class[]>([]);
   const [filteredClasses, setFilteredClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,9 +42,16 @@ export default function Classes() {
   const loadClasses = async () => {
     try {
       setLoading(true);
-      const data = await ClassesService.getAllClasses();
-      setClasses(data);
-      setFilteredClasses(data);
+      // If the logged user is a student, fetch only their classes
+      if (user && user.roles && user.roles.includes("student")) {
+        const data = await ClassesService.getClassesByStudent(user.id);
+        setClasses(data);
+        setFilteredClasses(data);
+      } else {
+        const data = await ClassesService.getAllClasses();
+        setClasses(data);
+        setFilteredClasses(data);
+      }
     } catch (error) {
       console.error("Erro ao carregar turmas:", error);
       showNotification("Erro ao carregar turmas", "error");

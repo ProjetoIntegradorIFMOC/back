@@ -166,8 +166,19 @@ export const ClassesService = {
 
   // Buscar turmas de um aluno
   getClassesByStudent: async (studentId: number): Promise<Class[]> => {
-    const response = await api.get(`/students/${studentId}/classes`);
-    return response.data;
+    try {
+      const response = await api.get(`/students/${studentId}/classes`);
+      return response.data;
+    } catch (error) {
+      console.warn("API não disponível, usando dados mockados para turmas do aluno", error);
+      // Encontrar todas as turmas onde o aluno está matriculado nos mocks
+      const classIds = Object.entries(mockClassStudents)
+        .filter(([, students]) => students.some((s) => s.studentId === studentId))
+        .map(([classId]) => Number(classId));
+
+      const result = mockClasses.filter((c) => classIds.includes(c.id));
+      return Promise.resolve(result);
+    }
   },
 };
 
