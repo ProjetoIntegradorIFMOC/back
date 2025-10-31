@@ -48,7 +48,7 @@ export default function Classes() {
       setLoading(true);
       // If the logged user is a student, fetch only their classes
       if (user && user.roles && user.roles.includes("student")) {
-        const data = await ClassesService.getClassesByStudent(user.id);
+        const data = await ClassesService.getClassesByStudent();
         setClasses(data);
         setFilteredClasses(data);
       } else {

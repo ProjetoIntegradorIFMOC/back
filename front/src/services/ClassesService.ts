@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 import type {
   Class,
   CreateClassDTO,
@@ -16,6 +17,26 @@ const api = axios.create({
   },
 });
 
+// Função auxiliar para obter headers autenticados
+function getAuthHeaders() {
+  const token = localStorage.getItem("auth_token");
+  return {
+    Authorization: `Bearer ${token}`,
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "X-XSRF-TOKEN": Cookies.get("XSRF-TOKEN") || "",
+  };
+}
+
+// Função auxiliar para tratamento de erros de autenticação
+function handleAuthError(error: unknown) {
+  if (axios.isAxiosError(error) && (error.response?.status === 401 || error.response?.status === 403)) {
+    localStorage.removeItem("auth_token");
+    window.location.href = "/login";
+  }
+  throw error;
+}
+
 // Interceptor para adicionar token se necessário
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
@@ -28,78 +49,63 @@ api.interceptors.request.use((config) => {
 export const ClassesService = {
   // Listar todas as turmas
   getAllClasses: async (): Promise<Class[]> => {
-    const response = await api.get("/turmas");
+    const response = await api.get("api/turmas", {
+      headers:getAuthHeaders(),
+      withCredentials:true
+    });
     return response.data.data || response.data;
   },
 
   // Buscar turma por ID
   getClassById: async (id: number): Promise<Class> => {
-    const response = await api.get(`/turmas/${id}`);
+    const response = await api.get(`api/turmas/${id}`, {
+      headers:getAuthHeaders(),
+      withCredentials:true
+    });
     return response.data.data || response.data;
   },
 
   // Criar nova turma
   createClass: async (data: CreateClassDTO): Promise<Class> => {
-    const response = await api.post("/turmas", data);
+    const response = await api.post("api/turmas", data, {
+      headers:getAuthHeaders(),
+      withCredentials:true
+    });
     return response.data.data || response.data;
   },
 
   // Atualizar turma
   updateClass: async (id: number, data: UpdateClassDTO): Promise<Class> => {
-    const response = await api.put(`/turmas/${id}`, data);
+    const response = await api.put(`api/turmas/${id}`, data, {
+      headers:getAuthHeaders(),
+      withCredentials:true
+    });
     return response.data.data || response.data;
   },
 
   // Deletar turma
   deleteClass: async (id: number): Promise<void> => {
-    await api.delete(`/turmas/${id}`);
-  },
-
-  // Listar alunos de uma turma
-  getClassStudents: async (classId: number): Promise<ClassStudent[]> => {
-    const response = await api.get(`/turmas/${classId}`);
-    const turma = response.data.data || response.data;
-    
-    // Transformar os alunos do backend para o formato esperado pelo frontend
-    if (turma.alunos && Array.isArray(turma.alunos)) {
-      return turma.alunos.map((aluno: any) => ({
-        id: aluno.id,
-        classId: classId,
-        studentId: aluno.user_id,
-        studentName: aluno.nome || aluno.name,
-        studentEmail: aluno.email,
-        enrolledAt: aluno.pivot?.created_at || new Date().toISOString(),
-      }));
-    }
-    return [];
-  },
-
-  // Adicionar aluno à turma
-  addStudentToClass: async (
-    classId: number,
-    data: AddStudentToClassDTO
-  ): Promise<ClassStudent> => {
-    const response = await api.post(`/turmas/${classId}/alunos`, data);
-    return response.data.data || response.data;
-  },
-
-  // Remover aluno da turma
-  removeStudentFromClass: async (
-    classId: number,
-    studentId: number
-  ): Promise<void> => {
-    await api.delete(`/turmas/${classId}/alunos/${studentId}`);
+    await api.delete(`api/turmas/${id}`, {
+      headers:getAuthHeaders(),
+      withCredentials:true
+    });
   },
 
   // Buscar turmas de um professor
-  getClassesByTeacher: async (teacherId: number): Promise<Class[]> => {
-    const response = await api.get(`/professores/${teacherId}/turmas`);
+  getClassesByTeacher: async (): Promise<Class[]> => {
+    const response = await api.get(`api/turmas`, {
+      headers:getAuthHeaders(),
+      withCredentials:true
+    });
     return response.data.data || response.data;
   },
 
   // Buscar turmas de um aluno
-  getClassesByStudent: async (studentId: number): Promise<Class[]> => {
-    const response = await api.get(`/alunos/${studentId}/turmas`);
+  getClassesByStudent: async (): Promise<Class[]> => {
+    const response = await api.get(`api/turmas`, {
+      headers:getAuthHeaders(),
+      withCredentials:true
+    });
     return response.data.data || response.data;
   },
 };
