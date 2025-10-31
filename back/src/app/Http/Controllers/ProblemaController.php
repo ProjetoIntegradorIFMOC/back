@@ -7,6 +7,8 @@ use App\Services\ProblemaService;
 use Exception;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
+
 class ProblemaController extends Controller
 {
     /**
@@ -28,7 +30,7 @@ class ProblemaController extends Controller
      */
     public function index()
     {
-        $problemas = ProblemaService::listarTodos();
+        $problemas = ProblemaService::listarTodos(Auth::id());
         return response()->json($problemas);
     }
 
@@ -76,6 +78,7 @@ class ProblemaController extends Controller
      */
     public function store(Request $request)
     {
+        $request->merge(['created_by' => Auth::id()]);
         $problemaService = new ProblemaService($request);
 
         if(!$problemaService->salvar()){

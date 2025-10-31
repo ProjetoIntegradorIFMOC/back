@@ -51,6 +51,7 @@ class Problema extends Model
         'enunciado',
         'tempo_limite',
         'memoria_limite',
+        'created_by',
     ];
 
     protected $with = [];

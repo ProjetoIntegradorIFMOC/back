@@ -83,6 +83,9 @@ export async function createProblem(problemData: {
     saida: string;
     privado?: boolean;
   }>;
+  privado?: boolean;
+  created_by?: number;
+
 }): Promise<Problem | null> {
   try {
     const response = await axios.post(`${API_URL}/api/problemas`, problemData, {

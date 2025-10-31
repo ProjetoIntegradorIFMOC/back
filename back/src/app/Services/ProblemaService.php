@@ -72,9 +72,15 @@ class ProblemaService {
         return $this->_problema;
     }
 
-    public static function listarTodos()
+    public static function listarTodos($user_id = null)
     {
-        return Problema::with('casosTeste')->get();
+        $query = Problema::with('casosTeste');
+
+        if ($user_id) {
+            $query->where('created_by', $user_id);
+        }
+
+        return $query->get();
     }
 
     public static function buscarPorId($id)
