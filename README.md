@@ -102,11 +102,16 @@ Usaremos o Docker *dentro* da VM para rodar o banco de dados, o Redis e o Judge0
     ```bash
     vagrant ssh
     ```
+    
 2.  Navegue até a pasta do projeto (que está em `/vagrant`):
     ```bash
     cd /vagrant
     ```
-3.  Inicie os containers do `common` (BD/Redis) e `judge0`:
+    Se você estiver no Windows, certifique-se de que seus arquivos de configuração não possuem o caractere `\r` nos fins de linha
+    ```bash
+    sed 's/\r$//' judge0.conf && sed 's/\r$//' init-backend-db.sh
+    ```
+3.  Inicie os containers do (BD/Redis) e `judge0`:
     ```bash
     docker compose up -d
     ```
@@ -124,8 +129,14 @@ Usaremos o Docker *dentro* da VM para rodar o banco de dados, o Redis e o Judge0
     ```
 
 3.  **Configuração (Primeira Vez):**
-    * Instale as dependências: `composer install`
-    * Copie o arquivo de ambiente: `cp .env.example .env`
+    * Instale as dependências:
+    ```bash
+    composer install
+    ```
+    * Copie o arquivo de ambiente:
+    ```bash
+    `cp .env.example .env`
+    ```
 
     * **Obtenha a Senha do Banco de Dados:**
       (Ainda na VM) Precisamos da senha do Postgres que foi gerada e salva no `judge0.conf`.
@@ -159,7 +170,7 @@ Usaremos o Docker *dentro* da VM para rodar o banco de dados, o Redis e o Judge0
 
     * Gere a chave do app: `php artisan key:generate`
     * Limpe o cache: `php artisan config:cache`
-    * Rode as migrações: `php artisan migrate`
+    * Rode as migrações: `php artisan migrate --seed`
 
 4.  **Execute o servidor:**
     ```bash
@@ -180,7 +191,7 @@ Usaremos o Docker *dentro* da VM para rodar o banco de dados, o Redis e o Judge0
 
 3.  **Configuração (Primeira Vez):**
     * Instale as dependências: `npm install`
-    * Copie e configure seu `.env` (ex: `VITE_API_URL=http://localhost:8000`).
+    * Copie o arquivo de ambiente: `cp .env.example .env`
 
 4.  **Execute o servidor:**
     ```bash
