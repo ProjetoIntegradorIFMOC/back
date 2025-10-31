@@ -12,6 +12,8 @@ import Teachers from "@/pages/teachers/Teachers";
 import Classes from "@/pages/classes/Classes";
 import ClassDetails from "@/pages/classDetails/ClassDetails";
 import SubmissionsDetails from "@/pages/submissionsDetails/SubmissionsDetails";
+import RequireAuth from "@/pages/RequireAuth";
+import RequireRole from "@/pages/RequireRole";
 import { BrowserRouter, Route, Routes } from "react-router";
 
 export default function AppRouter() {
@@ -41,6 +43,12 @@ export default function AppRouter() {
             <Route element={<RequireRole allowedRoles={["admin"]} />}>
               <Route path="students" element={<Students />} />
               <Route path="teachers" element={<Teachers />} />
+            </Route>
+            <Route element={<RequireRole allowedRoles={["professor", "admin"]} />}>
+              <Route path="classes">
+                <Route index element={<Classes />} />
+                <Route path=":id" element={<ClassDetails />} />
+              </Route>
             </Route>
           </Route>
         </Route>
