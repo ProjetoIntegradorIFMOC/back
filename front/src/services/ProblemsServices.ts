@@ -35,11 +35,8 @@ export async function getProblemById(id: string): Promise<Problem | undefined> {
       })) || [],
     };
   } catch (error) {
-    console.log("erro", error);
-    // Fallback para dados fake
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    return fakeProblems.find((p) => p.id === parseInt(id));
-  }
+    console.error("Erro ao buscar problema por ID:", error);
+    throw error;
 }
 
 export async function getAllProblems(): Promise<Problem[]> {
