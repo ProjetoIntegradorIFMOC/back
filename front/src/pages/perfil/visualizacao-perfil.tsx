@@ -114,12 +114,12 @@ export default function ProfileView() {
 
           {/* opcao para mudar a senha*/}
           <div className="pt-4 border-t mt-6">
-            <a
-              href="/change-password"
+            <Link
+              to="/change-password"
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-purple-600 hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
             >
               Alterar Senha
-            </a>
+            </Link>
           </div>
         </div>
       </div>
