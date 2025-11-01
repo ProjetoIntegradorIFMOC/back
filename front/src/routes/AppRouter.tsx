@@ -5,14 +5,16 @@ import AppLayout from "@/pages/AppLayout";
 import Home from "@/pages/home/Home";
 import Login from "@/pages/login/Login";
 import ChangePassword from "@/pages/changePassword/ChangePassword";
-import RequireAuth from "@/pages/RequireAuth";
-import RequireRole from "@/pages/RequireRole";
 import Unauthorized from "@/pages/Unauthorized";
 import Submissions from "@/pages/submissions/Submissions";
 import Students from "@/pages/students/Students";
 import Teachers from "@/pages/teachers/Teachers";
+import Classes from "@/pages/classes/Classes";
+import ClassDetails from "@/pages/classDetails/ClassDetails";
 import SubmissionsDetails from "@/pages/submissionsDetails/SubmissionsDetails";
 import Problems from "@/pages/problems/Problems";
+import RequireAuth from "@/pages/RequireAuth";
+import RequireRole from "@/pages/RequireRole";
 import { BrowserRouter, Route, Routes } from "react-router";
 
 export default function AppRouter() {
@@ -45,8 +47,14 @@ export default function AppRouter() {
             </Route>
             <Route element={<RequireRole allowedRoles={["admin", "professor"]} />}>
               <Route path="problems" element={<Problems />} />
+            <Route element={<RequireRole allowedRoles={["student", "professor", "admin"]} />}>
+              <Route path="classes">
+                <Route index element={<Classes />} />
+                <Route path=":id" element={<ClassDetails />} />
+              </Route>
             </Route>
           </Route>
+         </Route>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -27,10 +27,10 @@ class Professor extends Model
         return $this->belongsTo(User::class, 'id', 'id');
     }
 
-    // public function turmas()
-    // {
-    //     return $this->hasMany(Turma::class, 'professor_id');
-    // }
+     public function turmas()
+     {
+         return $this->hasMany(Turma::class, 'professor_id');
+     }
 
     public function problemas()
     {
