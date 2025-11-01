@@ -65,8 +65,8 @@ export async function getAllProblems(): Promise<Problem[]> {
       })) || [],
     }));
   } catch (error) {
-    console.log("erro", error);
-    return [];
+    console.error("Erro ao carregar problemas:", error);
+    throw error;
   }
 }
 
