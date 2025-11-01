@@ -404,7 +404,7 @@ export default function Header() {
                         <p className="text-sm font-medium text-gray-900">
                           Meu Perfil
                         </p>
-                        <p className="text-xs to-red-600">Gerencie sua conta</p>
+                        <p className="text-xs text-gray-500">Gerencie sua conta</p>
                       </div>
                     </div>
                   </div>
