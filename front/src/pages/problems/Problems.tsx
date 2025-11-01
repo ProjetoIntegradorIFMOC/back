@@ -52,6 +52,15 @@ function ProblemFormModal({ isOpen, onClose, onSave, problem, mode }: ProblemFor
     memoria_limite: 512,
     casos_teste: [{ entrada: "", saida: "", privado: false }]
   });
+  
+  const [errors, setErrors] = useState<{
+    titulo?: string;
+    enunciado?: string;
+    tempo_limite?: string;
+    memoria_limite?: string;
+  }>({});
+  
+  const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
   useEffect(() => {
     if (problem && mode === "edit") {
@@ -75,10 +84,88 @@ function ProblemFormModal({ isOpen, onClose, onSave, problem, mode }: ProblemFor
         casos_teste: [{ entrada: "", saida: "", privado: false }]
       });
     }
+    // Resetar erros quando o modal abrir
+    setErrors({});
+    setNotification(null);
   }, [problem, mode, isOpen]);
+
+  const validateForm = (): boolean => {
+    const newErrors: typeof errors = {};
+    
+    // Validar título
+    if (!formData.titulo.trim()) {
+      newErrors.titulo = "O título é obrigatório";
+    } else if (formData.titulo.length < 3) {
+      newErrors.titulo = "O título deve ter pelo menos 3 caracteres";
+    } else if (formData.titulo.length > 200) {
+      newErrors.titulo = "O título não pode ter mais de 200 caracteres";
+    }
+    
+    // Validar enunciado
+    let plainText = '';
+    try {
+      if (formData.enunciado) {
+        const parsed = JSON.parse(formData.enunciado);
+        plainText = parsed.blocks?.map((b: any) => b.text).join('').trim() || '';
+      }
+    } catch (e) {
+      plainText = formData.enunciado.trim();
+    }
+    
+    if (!plainText) {
+      newErrors.enunciado = "O enunciado é obrigatório";
+    } else if (plainText.length < 10) {
+      newErrors.enunciado = "O enunciado deve ter pelo menos 10 caracteres";
+    } else if (plainText.length > 10000) {
+      newErrors.enunciado = "O enunciado não pode ter mais de 10000 caracteres";
+    }
+    
+    // Validar tempo limite
+    if (!formData.tempo_limite || formData.tempo_limite < 100) {
+      newErrors.tempo_limite = "O tempo limite deve ser no mínimo 100ms";
+    } else if (formData.tempo_limite > 30000) {
+      newErrors.tempo_limite = "O tempo limite não pode ser maior que 30000ms (30s)";
+    }
+    
+    // Validar memória limite
+    if (!formData.memoria_limite || formData.memoria_limite < 128) {
+      newErrors.memoria_limite = "A memória limite deve ser no mínimo 128KB";
+    } else if (formData.memoria_limite > 1048576) {
+      newErrors.memoria_limite = "A memória limite não pode ser maior que 1048576KB (1GB)";
+    }
+    
+    // Validar casos de teste
+    for (let i = 0; i < formData.casos_teste.length; i++) {
+      const tc = formData.casos_teste[i];
+      if (!tc.entrada.trim() || !tc.saida.trim()) {
+        setNotification({ 
+          type: 'error', 
+          message: `Caso de teste ${i + 1}: entrada e saída são obrigatórias` 
+        });
+        return false;
+      }
+    }
+    
+    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length > 0) {
+      const firstError = Object.values(newErrors)[0];
+      setNotification({ type: 'error', message: firstError });
+      return false;
+    }
+    
+    return true;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setErrors({});
+    setNotification(null);
     onSave(formData);
   };
 
@@ -129,17 +216,34 @@ function ProblemFormModal({ isOpen, onClose, onSave, problem, mode }: ProblemFor
               <Input
                 id="titulo"
                 value={formData.titulo}
-                onChange={(e) => setFormData(prev => ({ ...prev, titulo: e.target.value }))}
+                onChange={(e) => {
+                  setFormData(prev => ({ ...prev, titulo: e.target.value }));
+                  if (errors.titulo) setErrors(prev => ({ ...prev, titulo: undefined }));
+                }}
+                className={errors.titulo ? "border-red-500" : ""}
                 required
               />
+              {errors.titulo && (
+                <p className="text-sm text-red-600 mt-1">{errors.titulo}</p>
+              )}
             </div>
             
             <div>
               <Label htmlFor="enunciado">Enunciado *</Label>
               <RichTextEditor
                 value={formData.enunciado}
-                onChange={(content) => setFormData(prev => ({ ...prev, enunciado: content }))}
+                onChange={(content) => {
+                  setFormData(prev => ({ ...prev, enunciado: content }));
+                  if (errors.enunciado) setErrors(prev => ({ ...prev, enunciado: undefined }));
+                }}
                 className="mt-2"
+                maxLength={10000}
+                onError={(error) => {
+                  if (error) {
+                    setNotification({ type: 'error', message: error });
+                  }
+                }}
+                error={errors.enunciado}
               />
             </div>
             
@@ -149,11 +253,19 @@ function ProblemFormModal({ isOpen, onClose, onSave, problem, mode }: ProblemFor
                 <Input
                   id="tempo_limite"
                   type="number"
-                  min="1"
+                  min="100"
+                  max="30000"
                   value={formData.tempo_limite}
-                  onChange={(e) => setFormData(prev => ({ ...prev, tempo_limite: parseInt(e.target.value) }))}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, tempo_limite: parseInt(e.target.value) || 0 }));
+                    if (errors.tempo_limite) setErrors(prev => ({ ...prev, tempo_limite: undefined }));
+                  }}
+                  className={errors.tempo_limite ? "border-red-500" : ""}
                   required
                 />
+                {errors.tempo_limite && (
+                  <p className="text-sm text-red-600 mt-1">{errors.tempo_limite}</p>
+                )}
               </div>
               
               <div>
@@ -161,11 +273,19 @@ function ProblemFormModal({ isOpen, onClose, onSave, problem, mode }: ProblemFor
                 <Input
                   id="memoria_limite"
                   type="number"
-                  min="1"
+                  min="128"
+                  max="1048576"
                   value={formData.memoria_limite}
-                  onChange={(e) => setFormData(prev => ({ ...prev, memoria_limite: parseInt(e.target.value) }))}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, memoria_limite: parseInt(e.target.value) || 0 }));
+                    if (errors.memoria_limite) setErrors(prev => ({ ...prev, memoria_limite: undefined }));
+                  }}
+                  className={errors.memoria_limite ? "border-red-500" : ""}
                   required
                 />
+                {errors.memoria_limite && (
+                  <p className="text-sm text-red-600 mt-1">{errors.memoria_limite}</p>
+                )}
               </div>
             </div>
 
@@ -244,6 +364,14 @@ function ProblemFormModal({ isOpen, onClose, onSave, problem, mode }: ProblemFor
               </button>
             </div>
           </form>
+          
+          {notification && (
+            <Notification
+              type={notification.type}
+              message={notification.message}
+              onClose={() => setNotification(null)}
+            />
+          )}
         </div>
       </div>
     </div>

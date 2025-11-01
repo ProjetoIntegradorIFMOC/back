@@ -21,6 +21,9 @@ type RichTextEditorProps = {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  maxLength?: number;
+  onError?: (error: string | null) => void;
+  error?: string;
 };
 
 type RichTextViewerProps = {
@@ -196,16 +199,19 @@ export function getPlainTextFromRichValue(value: string) {
   return state.getCurrentContent().getPlainText();
 }
 
-export function RichTextEditor({ value, onChange, placeholder, className }: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange, placeholder, className, maxLength, onError, error }: RichTextEditorProps) {
   const [editorState, setEditorState] = useState(() => createEditorStateFromValue(value));
   const editorRef = useRef<Editor | null>(null);
   const lastSerialized = useRef(value);
+  const [charCount, setCharCount] = useState(0);
 
   useEffect(() => {
     if (value !== lastSerialized.current) {
       const nextState = createEditorStateFromValue(value);
       setEditorState(nextState);
       lastSerialized.current = value;
+      const plainText = nextState.getCurrentContent().getPlainText();
+      setCharCount(plainText.length);
     }
   }, [value]);
 
@@ -213,7 +219,46 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
   const currentFontFamily = useMemo(() => getCurrentFontFamily(editorState), [editorState]);
   const currentBlockType = useMemo(() => getCurrentBlockType(editorState), [editorState]);
 
+  const handleBeforeInput = (): DraftHandleValue => {
+    if (maxLength) {
+      const plainText = editorState.getCurrentContent().getPlainText();
+      const currentLength = plainText.length;
+      
+      if (currentLength >= maxLength) {
+        if (onError) {
+          onError(`O texto não pode ter mais de ${maxLength} caracteres. Atual: ${currentLength}`);
+        }
+        return 'handled';
+      }
+    }
+    return 'not-handled';
+  };
+
+  const handlePastedText = (text: string): DraftHandleValue => {
+    if (maxLength) {
+      const plainText = editorState.getCurrentContent().getPlainText();
+      const currentLength = plainText.length;
+      const newLength = currentLength + text.length;
+      
+      if (newLength > maxLength) {
+        if (onError) {
+          onError(`O texto não pode ter mais de ${maxLength} caracteres. Atual: ${currentLength}`);
+        }
+        return 'handled';
+      }
+    }
+    return 'not-handled';
+  };
+
   const handleChange = (state: EditorState) => {
+    const plainText = state.getCurrentContent().getPlainText();
+    const currentLength = plainText.length;
+    setCharCount(currentLength);
+
+    if (maxLength && currentLength <= maxLength && onError) {
+      onError(null);
+    }
+
     setEditorState(state);
     const serialized = serializeEditorState(state);
     lastSerialized.current = serialized;
@@ -298,7 +343,12 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
   const canRedo = editorState.getRedoStack().size > 0;
 
   return (
-    <div className={cn("border border-gray-300 rounded-lg", className)}>
+    <div className={cn("border rounded-lg", error ? "border-red-500" : "border-gray-300", className)}>
+      {error && (
+        <div className="bg-red-50 border-b border-red-200 px-3 py-2 text-sm text-red-600">
+          {error}
+        </div>
+      )}
       <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-3 py-2">
         <button
           type="button"
@@ -425,12 +475,18 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
 
       <div
         className="min-h-[180px] px-3 py-2 cursor-text"
+        onClick={() => {
+          editorRef.current?.focus();
+        }}
+        style={{ userSelect: 'text', WebkitUserSelect: 'text' } as React.CSSProperties}
       >
         <Editor
           ref={editorRef}
           editorState={editorState}
           onChange={handleChange}
           handleKeyCommand={handleKeyCommand}
+          handleBeforeInput={handleBeforeInput}
+          handlePastedText={handlePastedText}
           onTab={handleTab}
           placeholder={placeholder}
           customStyleMap={customStyleMap}
@@ -439,6 +495,14 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
           spellCheck={true}
         />
       </div>
+      {maxLength && (
+        <div className={cn(
+          "border-t px-3 py-1 text-xs text-right",
+          charCount > maxLength ? "bg-red-50 text-red-600" : "bg-gray-50 text-gray-500"
+        )}>
+          {charCount} / {maxLength} caracteres
+        </div>
+      )}
     </div>
   );
 }
