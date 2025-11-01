@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import type { Problem } from "@/types";
 import { MoreVertical, Pencil, Trash2, Codesandbox } from "lucide-react";
+import { getPlainTextFromRichValue } from "@/components/RichTextEditor";
 
 type ProblemCardProps = {
   problem: Problem;
@@ -47,7 +48,7 @@ export function ProblemCard({ problem, onDelete, onEdit, onView }: ProblemCardPr
           <div className="flex-grow">
             <h3 className="text-lg font-semibold text-gray-800">{problem.title}</h3>
             <p className="text-gray-600 line-clamp-2 mt-1">
-              {problem.statement}
+              {getPlainTextFromRichValue(problem.statement)}
             </p>
           </div>
         </div>

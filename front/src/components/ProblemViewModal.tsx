@@ -1,6 +1,7 @@
 import type { Problem } from "@/types";
 import { X, Clock, HardDrive, Codesandbox } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { RichTextViewer } from "@/components/RichTextEditor";
 
 
 // Modal de visualização
@@ -34,7 +35,7 @@ export default function ProblemViewModal({ isOpen, onClose, problem }: ProblemVi
             <div>
               <h3 className="font-semibold mb-2">Enunciado</h3>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="whitespace-pre-wrap">{problem.statement}</p>
+                <RichTextViewer value={problem.statement} />
               </div>
             </div>
             

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2, Eye, Clock, HardDrive, X, BookOpen, Search, Codesandbox } from "lucide-react";
+import { RichTextEditor } from "@/components/RichTextEditor";
 import {
   Table,
   TableBody,
@@ -135,12 +136,10 @@ function ProblemFormModal({ isOpen, onClose, onSave, problem, mode }: ProblemFor
             
             <div>
               <Label htmlFor="enunciado">Enunciado *</Label>
-              <Textarea
-                id="enunciado"
+              <RichTextEditor
                 value={formData.enunciado}
-                onChange={(e) => setFormData(prev => ({ ...prev, enunciado: e.target.value }))}
-                rows={6}
-                required
+                onChange={(content) => setFormData(prev => ({ ...prev, enunciado: content }))}
+                className="mt-2"
               />
             </div>
             
