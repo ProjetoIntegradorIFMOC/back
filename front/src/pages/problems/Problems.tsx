@@ -445,7 +445,6 @@ export default function Problems() {
     try {
       setLoading(true);
       const data = await getAllProblems();
-      console.log(data);
       setProblems(data);
     } catch (error) {
       setNotification({ type: 'error', message: 'Erro ao carregar problemas' });
