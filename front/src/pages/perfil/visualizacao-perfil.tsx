@@ -1,4 +1,4 @@
-import { useUser } from "../../context/UserContext"; // Caminho de importação corrigido (Assumindo src/pages/ -> src/ -> context/)
+import { useUser } from "@/context/UserContext";
 import { User, Mail, Zap, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
