@@ -37,6 +37,7 @@ export async function getProblemById(id: string): Promise<Problem | undefined> {
   } catch (error) {
     console.error("Erro ao buscar problema por ID:", error);
     throw error;
+  }
 }
 
 export async function getAllProblems(): Promise<Problem[]> {
