@@ -15,6 +15,7 @@ import SubmissionsDetails from "@/pages/submissionsDetails/SubmissionsDetails";
 import RequireAuth from "@/pages/RequireAuth";
 import RequireRole from "@/pages/RequireRole";
 import { BrowserRouter, Route, Routes } from "react-router";
+import ProfileView from "@/pages/perfil/visualizacao-perfil";
 
 export default function AppRouter() {
   return (
@@ -26,8 +27,13 @@ export default function AppRouter() {
           <Route path="/" element={<AppLayout />}>
             <Route index element={<App />} />
             <Route path="home" element={<Home />} />
-            <Route element={<RequireRole allowedRoles={["student", "professor", "admin"]} />}>
+            <Route
+              element={
+                <RequireRole allowedRoles={["student", "professor", "admin"]} />
+              }
+            >
               <Route path="change-password" element={<ChangePassword />} />
+              <Route path="perfil" element={<ProfileView />} />
               <Route path="activities">
                 <Route index element={<Activities />} />
                 <Route path=":id" element={<ActivitiesDetails />} />
@@ -44,7 +50,11 @@ export default function AppRouter() {
               <Route path="students" element={<Students />} />
               <Route path="teachers" element={<Teachers />} />
             </Route>
-            <Route element={<RequireRole allowedRoles={["student", "professor", "admin"]} />}>
+            <Route
+              element={
+                <RequireRole allowedRoles={["student", "professor", "admin"]} />
+              }
+            >
               <Route path="classes">
                 <Route index element={<Classes />} />
                 <Route path=":id" element={<ClassDetails />} />
