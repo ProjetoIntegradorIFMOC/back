@@ -77,7 +77,6 @@ Se você usou a **Opção B (Manual)**, você deve executar o script de provisio
 # Apenas para usuários da Opção B (Manual)
 cd /caminho/para/o/projeto
 sudo ./provision-tools.sh
-
 ```
 
 ## Passo 3: Executando os Componentes (Fluxo Diário)
@@ -107,10 +106,11 @@ Usaremos o Docker *dentro* da VM para rodar o banco de dados, o Redis e o Judge0
     ```bash
     cd /vagrant
     ```
-    Se você estiver no Windows, certifique-se de que seus arquivos de configuração não possuem o caractere `\r` nos fins de linha
+    Se você estiver no Windows, certifique-se de que seus arquivos de configuração não possuem o caractere `\r` nos fins de linha:
     ```bash
-    sed 's/\r$//' judge0.conf && sed 's/\r$//' init-backend-db.sh
+    sed -i 's/\r$//' judge0.conf && sed -i 's/\r$//' init-backend-db.sh
     ```
+    Quando a máquina for reiniciada talvez seja necessário rodar o comando de novo.
 3.  Inicie os containers do (BD/Redis) e `judge0`:
     ```bash
     docker compose up -d
@@ -168,9 +168,19 @@ Usaremos o Docker *dentro* da VM para rodar o banco de dados, o Redis e o Judge0
         SESSION_DOMAIN=localhost
         ```
 
-    * Gere a chave do app: `php artisan key:generate`
-    * Limpe o cache: `php artisan config:cache`
-    * Rode as migrações: `php artisan migrate --seed`
+    * Gere a chave do app:
+    ```bash
+    php artisan key:generate
+    ```
+    * Limpe o cache: 
+    ```bash
+    php artisan config:cache
+    ```
+    * Rode as migrações: 
+    ```bash
+    php artisan migrate --seed
+    ``` 
+
 
 4.  **Execute o servidor:**
     ```bash
@@ -190,8 +200,14 @@ Usaremos o Docker *dentro* da VM para rodar o banco de dados, o Redis e o Judge0
     ```
 
 3.  **Configuração (Primeira Vez):**
-    * Instale as dependências: `npm install`
-    * Copie o arquivo de ambiente: `cp .env.example .env`
+    * Instale as dependências:
+    ```bash
+    npm install
+    ```
+    * Copie o arquivo de ambiente:
+    ```bash
+    cp .env.example .env
+    ```
 
 4.  **Execute o servidor:**
     ```bash

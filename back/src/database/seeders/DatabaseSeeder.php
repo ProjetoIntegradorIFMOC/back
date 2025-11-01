@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
 
             CursoSeeder::class, // Primeiro cria os cursos
             AlunoSeeder::class, // Depois cria os alunos, que dependem dos cursos
+            ProfessorSeeder::class,
+            TurmaSeeder::class,
         ]);
     }
 }

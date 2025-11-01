@@ -17,7 +17,8 @@ Vagrant.configure("2") do |config|
       ".git/",
       ".vagrant/",
       "back/src/vendor/",
-      "front/node_modules/"
+      "front/node_modules/",
+      "back/src/.env"
     ]
 
   # --- Mapeamento de Portas ---
