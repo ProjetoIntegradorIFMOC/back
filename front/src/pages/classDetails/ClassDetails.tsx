@@ -533,11 +533,6 @@ export default function ClassDetails() {
         />
       )}
 
-      <ProblemViewModal
-        isOpen={!!viewProblem}
-        problem={viewProblem}
-        onClose={() => setViewProblem(null)}
-      />
 
       {viewActivity && (
         <ActivityViewModal
@@ -570,6 +565,13 @@ export default function ClassDetails() {
           activityTitle={allProblems.find(p => p.id === deletingActivity.problemId)?.title || "Atividade"}
         />
       )}
+
+      <ProblemViewModal
+        isOpen={!!viewProblem}
+        problem={viewProblem}
+        onClose={() => setViewProblem(null)}
+      />
+      
     </div>
   );
 }
