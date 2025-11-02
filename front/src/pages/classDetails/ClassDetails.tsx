@@ -9,6 +9,7 @@ import { getAllProblems } from "@/services/ProblemsServices";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
 import Loading from "@/components/Loading";
 import Notification from "@/components/Notification";
 import { ArrowLeft, UserPlus, UserMinus, Users, Search, BookOpen, Plus, X, Codesandbox, Clock, HardDrive, Calendar, MoreVertical, Pencil, Trash2 } from "lucide-react";
@@ -583,7 +584,7 @@ interface NewActivityModalProps {
 
 function NewActivityModal({ isOpen, onClose, onSave, problems, onViewProblem }: NewActivityModalProps) {
   const [selectedProblemId, setSelectedProblemId] = useState<number | null>(null);
-  const [dueDate, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState<Date | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredProblems = problems.filter(problem => 
@@ -597,9 +598,11 @@ function NewActivityModal({ isOpen, onClose, onSave, problems, onViewProblem }: 
     if (!selectedProblemId || !dueDate) {
       return;
     }
+    // Convert Date to MySQL datetime format (YYYY-MM-DD HH:MM:SS)
+    const formattedDate = dueDate.toISOString().slice(0, 19).replace('T', ' ');
     onSave({
       problema_id: selectedProblemId,
-      data_entrega: dueDate,
+      data_entrega: formattedDate,
     });
   };
 
@@ -689,11 +692,10 @@ function NewActivityModal({ isOpen, onClose, onSave, problems, onViewProblem }: 
 
             <div>
               <Label htmlFor="due-date">Data de Entrega *</Label>
-              <Input
-                id="due-date"
-                type="datetime-local"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+              <DateTimePicker
+                selected={dueDate}
+                onChange={setDueDate}
+                placeholderText="dd/mm/aaaa às hh:mm"
                 required
                 className="mt-2"
               />
@@ -844,13 +846,13 @@ interface EditActivityModalProps {
 
 function EditActivityModal({ isOpen, onClose, onSave, activity, problems, onViewProblem }: EditActivityModalProps) {
   const [selectedProblemId, setSelectedProblemId] = useState<number | null>(activity.problemId);
-  const [dueDate, setDueDate] = useState(activity.dueDate.replace(' ', 'T').slice(0, 16));
+  const [dueDate, setDueDate] = useState<Date | null>(new Date(activity.dueDate.replace(' ', 'T')));
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     setSelectedProblemId(activity.problemId);
-    const formattedDate = activity.dueDate.replace(' ', 'T').slice(0, 16);
-    setDueDate(formattedDate);
+    const parsedDate = new Date(activity.dueDate.replace(' ', 'T'));
+    setDueDate(parsedDate);
     setSearchTerm("");
   }, [activity, isOpen]);
 
@@ -865,9 +867,11 @@ function EditActivityModal({ isOpen, onClose, onSave, activity, problems, onView
     if (!selectedProblemId || !dueDate) {
       return;
     }
+    // Convert Date to MySQL datetime format (YYYY-MM-DD HH:MM:SS)
+    const formattedDate = dueDate.toISOString().slice(0, 19).replace('T', ' ');
     onSave({
       problema_id: selectedProblemId,
-      data_entrega: dueDate,
+      data_entrega: formattedDate,
     });
   };
 
@@ -955,11 +959,10 @@ function EditActivityModal({ isOpen, onClose, onSave, activity, problems, onView
 
             <div>
               <Label htmlFor="due-date-edit">Data de Entrega *</Label>
-              <Input
-                id="due-date-edit"
-                type="datetime-local"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+              <DateTimePicker
+                selected={dueDate}
+                onChange={setDueDate}
+                placeholderText="dd/mm/aaaa às hh:mm"
                 required
                 className="mt-2"
               />
